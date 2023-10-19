@@ -5,16 +5,17 @@
 
 std::vector<float> func(
         float t,
-        std::vector<float>* y
-    ) {
+        std::vector<float> y
+        ) {
 
     float G = 9.81;
     float k = 0.0003;
+
     return std::vector<float> {
-        y->at(1),
-        static_cast<float>(-k * pow(y->at(1), 3)),
-        y->at(3),
-        static_cast<float>(-k * pow(y->at(3), 3) - G)
+        y.at(1),
+        static_cast<float>(-k * pow(y.at(1), 3)),
+        y.at(3),
+        static_cast<float>(-k * pow(y.at(3), 3) - G)
     };
 }
 
@@ -22,7 +23,7 @@ std::vector<float> func(
 std::vector<float> func2(
         float t,
         std::vector<float> y
-) {
+        ) {
 
     return std::vector<float> {
             y[1],
@@ -31,11 +32,16 @@ std::vector<float> func2(
 }
 
 
-std::vector<float> calc(std::vector<float>* y, std::vector<float>* k, float h) {
-    std::vector<float> res;
+std::vector<float> calc(
+        std::vector<float>* y,
+        std::vector<float>* k,
+        float h
+        ) {
 
+    std::vector<float> res;
     size_t len = y->size();
     res.reserve(len);
+
     for (int i = 0; i < len; i++) {
         res.push_back(y->at(i) + k->at(i) * h);
     }
@@ -79,13 +85,16 @@ std::vector<std::vector<float>> rk4(
 }
 
 int main() {
-    std::vector<float> y0 {0, 0};
-    std::vector<std::vector<float>> ans = rk4(&func2, 0, 1, &y0, 0.1);
+
+    std::vector<float> y0 {0, 100, 0, 100};
+    std::vector<std::vector<float>> ans = rk4(&func, 0, 1, &y0, 0.1);
+
     for (int i = 0; i < ans.size(); i++) {
         for (int j = 0; j < ans[i].size(); j++) {
             std::cout << ans[i][j] << " ";
         }
         std::cout << "\n";
     }
+
     return 0;
 }
