@@ -55,7 +55,7 @@ int main() {
     std::vector<float> y0 {0, 100, 0, 100};
 
     // Solving a given ODE system on a given time interval with
-    // given initial values and a given initial step
+    // given initial values and a given initial step using rk4()
     std::vector<std::vector<float>> ans = rk4(&func, &params, 0, 5, &y0, 0.01);
 
     // Output of the obtained values
@@ -67,14 +67,43 @@ int main() {
     }
 
 
-    // Solving a given system of oda at a certain moment with
-    // given values and a given step
-    std::vector<float> ans_iter = rk4_iteration(&func, &params, 0, &y0, 0.01);
+    // Initialize necessary variables
+    std::vector<std::vector<float>> ans_iter = {y0};
+    std::vector<float> y;
+    float FlightTime, Distance, Height, y4_old = 0;
+
+    // Solving a given system of ODE using rk_iteration()
+    // with some conditional
+    for (float t = 0; t < UINT16_MAX; t += 0.01) {
+        y = rk4_iteration(&func, &params, t, &ans_iter.back(), 0.01);
+
+        // Max height
+        if (y[3] * y4_old < 0) Height = y[2];
+
+        // Flight distance and flight time
+        if (y[3] < 0 && y[2] <= 0) {
+            FlightTime = t;
+            Distance = y[0];
+            break;
+        }
+
+        y4_old = y[3];
+        ans_iter.push_back(y);
+    }
 
     // Output of the obtained values
-    for (auto & i : ans_iter) {
-        std::cout << i << " ";
+    for (int i = 0; i < ans_iter.size(); i++) {
+        for (int j = 0; j < ans_iter[i].size(); j++) {
+            std::cout << ans_iter[i][j] << " ";
+        }
+        std::cout << "\n";
     }
+
+    // Some statistics about the shot
+    std::cout << "\n\n";
+    std::cout << "Flight Time = " << FlightTime << "\n";
+    std::cout << "Distance = " << Distance << "\n";
+    std::cout << "Max Height = " << Height << "\n";
 
     return 0;
 }
