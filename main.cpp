@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include "rk4.h"
 
 
@@ -12,7 +13,8 @@
  *
  */
 struct params {
-    float k = 0.0003;
+    float k = 0.003;
+    float m = 110;
 } params;
 
 
@@ -39,12 +41,13 @@ std::vector<float> func(
 
     float G = 9.81;
     float k = p->k;
+    float m = p->m;
 
     return std::vector<float> {
             y[1],
-            static_cast<float>(-k * pow(y[1], 3)),
+            static_cast<float>(-k / m * pow(y[1], 3)),
             y[3],
-            static_cast<float>(-k * pow(y[3], 3) - G)
+            static_cast<float>(-k / m * pow(y[3], 3) - G)
     };
 }
 
@@ -52,7 +55,20 @@ std::vector<float> func(
 int main() {
 
     // Initialization of initial values
-    std::vector<float> y0 {0, 100, 0, 100};
+
+    // Starting speed
+    float v0 = 150;
+
+    // Y-axis angle
+    float beta = 45;
+
+    // Initial conditional
+    std::vector<float> y0 {
+        0,  // x0
+        static_cast<float>(v0 * cos(beta*M_PI/180)),  // Vx
+        0,  // y0
+        static_cast<float>(v0 * sin(beta*M_PI/180))   // Vy
+    };
 
     // Solving a given ODE system on a given time interval with
     // given initial values and a given initial step using rk4()
