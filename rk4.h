@@ -80,3 +80,48 @@ std::vector<std::vector<float>> rk4(
 
     return res;
 }
+
+
+float* calc(
+        const int* len,
+        const float* y,
+        const float* k,
+        float h
+) {
+
+    float* res = new float[*len];
+
+    for (int i = 0; i < *len; i++) {
+        res[i] = y[i] + k[i] * h;
+    }
+
+    return res;
+}
+
+
+float* rk4_iteration(
+        int len,
+        float* (*func) (float, float*, struct params*),
+        struct params* param,
+        float x,
+        float* y,
+        float h
+) {
+
+    float*  k1;
+    float*  k2;
+    float*  k3;
+    float*  k4;
+    float* curr = new float[len];
+
+    k1 = func(x, y, param);
+    k2 = func(x + h/2, calc(&len, y, k1, h/2), param);
+    k3 = func(x + h/2, calc(&len, y, k2, h/2), param);
+    k4 = func(x + h, calc(&len, y, k3, h), param);
+
+    for (int j = 0; j < len; j++) {
+        curr[j] = y[j] + h/6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+    }
+
+    return curr;
+}
